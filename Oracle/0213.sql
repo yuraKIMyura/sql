@@ -1,0 +1,85 @@
+SELECT empno, ename, empno+'500' FROM emp WHERE ename = UPPER('scott');
+
+--형변환함수 TO_CHAR
+SELECT SYSDATE FROM DUAL;
+SELECT TO_CHAR(SYSDATE, 'YYYY"년 "MM"월"') FROM DUAL;
+SELECT 
+    TO_CHAR(SYSDATE, 'MONTH', 'NLS_DATE_LANGUAGE= JAPANESE') AS JAP,
+    TO_CHAR(SYSDATE, 'MONTH', 'NLS_DATE_LANGUAGE= ARABIC') AS ARA,
+    TO_CHAR(SYSDATE, 'MONTH', 'NLS_DATE_LANGUAGE= SPANISH') AS SPA,
+    TO_CHAR(SYSDATE, 'MONTH', 'NLS_DATE_LANGUAGE= FRENCH') AS FRA
+FROM DUAL;
+
+SELECT TO_CHAR(SYSDATE, 'AM HH') FROM DUAL;
+
+SELECT sal,
+    TO_CHAR(SAL, '$999,999') AS SAL_DOLLAR,
+    TO_CHAR(SAL, 'L999,999') AS SAL_LOCAL,
+    TO_CHAR(SAL, '999,999.00') AS SAL_FILL,
+    TO_CHAR(SAL, '999,999.99') AS SAL_NOFILL,
+    TO_CHAR(SAL, '009,999.00') AS SAL_FILL
+FROM emp;
+
+
+--형변환함수 TO_NUMBER
+SELECT 1300 + '1500' FROM DUAL;
+SELECT '1300' + '1500' FROM DUAL;
+--column 1, column 300+1, column 500으로 나뉨
+SELECT 1,300 + 1,500 FROM DUAL;
+--오류 발생
+SELECT 1_300 + 1_500 FROM DUAL;
+--오류 발생
+SELECT '1,300' + '1,500' FROM DUAL;
+--문제 해결
+SELECT TO_NUMBER('1,300', '9,999') + TO_NUMBER('1,500', '9,999') AS cast FROM DUAL;
+
+
+--형변환함수 TO_DATE
+SELECT TO_DATE('2019-7-14', 'YY/MM/DD') FROM DUAL;
+SELECT TO_DATE('19년7월14일', 'YY"년"MM"월"DD"일"') FROM DUAL;
+
+SELECT * FROM emp WHERE hiredate>'1981/06/01';
+SELECT * FROM emp WHERE hiredate>'1981-06-01';
+SELECT * FROM emp WHERE hiredate>'19810601';
+SELECT * FROM emp WHERE hiredate>'81 06 01';
+SELECT * FROM emp WHERE hiredate>'81 6 1';
+--오류발생
+SELECT * FROM emp WHERE hiredate>'81 06';
+--원하는 결과 안 나옴
+SELECT * FROM emp WHERE hiredate > TO_DATE('8106', 'YYMM');
+
+SELECT 
+    TO_DATE('49/12/10', 'YY/MM/DD') AS s1900,
+    TO_DATE('50/12/10', 'RR/MM/DD') AS s2000 
+FROM DUAL;
+
+ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY/MM/DD';
+
+
+--NVL, NVL2
+SELECT NVL(comm, 0), comm+100 FROM emp;
+SELECT 
+    comm, 
+    NVL2(comm, 'O', 'X') AS str, 
+    NVL2(comm, comm, 0) AS num 
+FROM emp;
+
+
+--DECODE
+SELECT empno, ename, job, sal,
+DECODE(job,
+    'MANAGER', sal*1.1,
+    'SALESMAN', sal*1.05,
+    'ANALYST', sal,
+    sal*1.03) AS upsal
+FROM emp;
+
+--CASE
+SELECT empno, ename, job, sal,
+CASE job
+    WHEN 'MANAGER' THEN sal*1.1
+    WHEN 'SALESMAN' THEN sal*1.05
+    WHEN 'ANALYST' then sal
+    ELSE sal
+END AS upsal
+FROM emp;

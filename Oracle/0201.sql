@@ -1,0 +1,1 @@
+CREATE TABLE emp1 AS SELECT ename, job, sal FROM emp;
